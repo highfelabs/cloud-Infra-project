@@ -1,6 +1,8 @@
 variable "name" {
   description = "Name prefix for all S3 resources"
   type        = string
+  default     = "saas-infra"
+
 }
 
 variable "bucket_suffix" {

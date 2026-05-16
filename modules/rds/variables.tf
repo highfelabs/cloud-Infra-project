@@ -1,6 +1,14 @@
 variable "name" {
   description = "Name prefix for all RDS resources"
   type        = string
+  default     = "saas-infra"
+
+}
+
+variable "aws_region" {
+  description = "AWS region — used by the RDS waiter"
+  type        = string
+  default     = "us-east-1"
 }
 
 variable "vpc_id" {
@@ -15,6 +23,11 @@ variable "db_subnet_ids" {
 
 variable "app_sg_id" {
   description = "Security group ID of the app servers. Only this SG is granted DB access."
+  type        = string
+}
+
+variable "rds_sg_id" {
+  description = "Security group ID to attach to the RDS instance"
   type        = string
 }
 
@@ -85,14 +98,14 @@ variable "kms_key_arn" {
 variable "multi_az" {
   description = "Enable Multi-AZ deployment. Set true for production, false for staging to save cost."
   type        = bool
-  default     = true
+  default     = false
 }
 
 # ── Backups ───────────────────────────────────────────────────────────────────
 variable "backup_retention_days" {
   description = "Number of days to retain automated backups. 0 disables backups."
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "skip_final_snapshot" {
@@ -111,7 +124,7 @@ variable "deletion_protection" {
 variable "apply_immediately" {
   description = "Apply changes immediately instead of during the maintenance window. Use true for staging only."
   type        = bool
-  default     = false
+  default     = true
 }
 
 # ── Monitoring ────────────────────────────────────────────────────────────────
@@ -131,7 +144,7 @@ variable "max_connections_alarm_threshold" {
 variable "secret_recovery_window" {
   description = "Days before a deleted secret is permanently removed. Set 0 for immediate deletion in staging."
   type        = number
-  default     = 7
+  default     = 0
 }
 
 variable "tags" {

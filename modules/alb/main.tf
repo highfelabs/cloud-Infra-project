@@ -3,7 +3,7 @@
 #  Internet-facing, placed in public subnets
 # ─────────────────────────────────────────────
 resource "aws_lb" "this" {
-  name               = "${var.name}-alb-T"
+  name               = "${var.name}-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
