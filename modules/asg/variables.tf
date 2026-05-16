@@ -1,6 +1,8 @@
 variable "name" {
   description = "Name prefix for the ASG and related resources"
   type        = string
+  default     = "saas-infra"
+
 }
 
 variable "private_subnet_ids" {

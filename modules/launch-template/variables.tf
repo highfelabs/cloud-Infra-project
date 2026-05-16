@@ -1,6 +1,8 @@
 variable "name" {
   description = "Name prefix for the launch template"
   type        = string
+  default     = "saas-infra"
+
 }
 
 variable "ami_id" {

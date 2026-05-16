@@ -1,6 +1,7 @@
 variable "name" {
   description = "Name prefix for all ALB resources"
   type        = string
+  default     = "saas-infra"
 }
 
 variable "vpc_id" {

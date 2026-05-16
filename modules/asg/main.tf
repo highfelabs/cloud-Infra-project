@@ -27,6 +27,7 @@ resource "aws_autoscaling_group" "this" {
       min_healthy_percentage = 50
       instance_warmup        = var.instance_warmup
     }
+    triggers = ["tag"]
   }
 
   dynamic "tag" {
@@ -37,7 +38,7 @@ resource "aws_autoscaling_group" "this" {
       propagate_at_launch = true
     }
   }
-
+    
   lifecycle {
     create_before_destroy = true
     # Ignore desired_capacity after first apply — let the ASG manage it

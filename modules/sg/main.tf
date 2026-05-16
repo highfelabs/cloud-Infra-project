@@ -60,20 +60,12 @@ resource "aws_security_group" "app" {
     security_groups = [aws_security_group.alb.id]
   }
 
-  ingress {
-    description     = "SSH from Anywhere"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "ICMP ping from Anywhere"
+    ingress {
+    description = "ICMP ping from within VPC"
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
@@ -101,7 +93,7 @@ resource "aws_security_group" "rds" {
     from_port       = var.db_port
     to_port         = var.db_port
     protocol        = "tcp"
-    security_groups = [var.app_sg_id]
+    security_groups = [aws_security_group.app.id]
   }
 
   egress {

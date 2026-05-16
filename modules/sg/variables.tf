@@ -1,6 +1,8 @@
 variable "name" {
   description = "Name prefix for all security groups"
   type        = string
+  default     = "saas-infra"
+
 }
 
 variable "vpc_id" {
@@ -13,10 +15,10 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "app_sg_id" {
-  description = "Security group ID of the app servers. Only this SG is granted DB access."
-  type        = string
-}
+# variable "app_sg_id" {
+#   description = "Security group ID of the app servers. Only this SG is granted DB access."
+#   type        = string
+# }
 
 variable "tags" {
   description = "Tags to apply to all security groups"

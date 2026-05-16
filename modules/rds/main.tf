@@ -37,13 +37,40 @@ resource "random_password" "master" {
 #  hardcoded env vars
 # ─────────────────────────────────────────────
 resource "aws_secretsmanager_secret" "rds" {
-  name                    = "${var.name}/rds/credentials"
+  name                    = "${var.name}/rds/creds"
   description             = "RDS master credentials for ${var.name}"
   recovery_window_in_days = var.secret_recovery_window
 
   tags = merge(var.tags, { Name = "${var.name}-rds-secret" })
+
+  
 }
 
+# ─────────────────────────────────────────────
+#  Wait for RDS to be truly available
+#  before writing credentials to Secrets Manager
+# ─────────────────────────────────────────────
+resource "null_resource" "wait_for_rds" {
+  depends_on = [aws_db_instance.this]
+
+  provisioner "local-exec" {
+    command = <<EOF
+echo "Waiting for RDS to be available..."
+aws rds wait db-instance-available \
+  --db-instance-identifier ${aws_db_instance.this.identifier} \
+  --region ${var.aws_region}
+echo "RDS is available"
+EOF
+  }
+
+  triggers = {
+    rds_instance_id = aws_db_instance.this.id
+  }
+}
+
+# ─────────────────────────────────────────────
+#  Write credentials AFTER RDS is confirmed ready
+# ─────────────────────────────────────────────
 resource "aws_secretsmanager_secret_version" "rds" {
   secret_id = aws_secretsmanager_secret.rds.id
   secret_string = jsonencode({
@@ -54,6 +81,12 @@ resource "aws_secretsmanager_secret_version" "rds" {
     dbname   = var.db_name
     engine   = var.engine
   })
+
+  depends_on = [null_resource.wait_for_rds]
+
+  lifecycle {
+    replace_triggered_by = [aws_db_instance.this]
+  }
 }
 
 # ─────────────────────────────────────────────
@@ -83,7 +116,7 @@ resource "aws_db_instance" "this" {
 
   # Network
   db_subnet_group_name   = aws_db_subnet_group.this.name
-  #vpc_security_group_ids = [aws_security_group.rds.id]
+  vpc_security_group_ids = [var.rds_sg_id]
   publicly_accessible    = false
   port                   = var.db_port
 
