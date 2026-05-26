@@ -9,6 +9,13 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment (dev/staging/prod)"
+        required: true
+        default: dev
+
 jobs:
   terraform:
     name: Terraform Workflow
@@ -27,6 +34,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Set environment (PR = dev default)
+        run: echo "ENV=dev" >> $GITHUB_ENV
 
       # Verify Terraform version
       - name: Terraform Version
@@ -47,6 +57,7 @@ jobs:
       # Generate execution plan
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        working-directory: envs/${{ env.ENV }}
 
       # Upload plan artifact
       - name: Upload Terraform Plan
@@ -54,8 +65,10 @@ jobs:
         with:
           name: terraform-plan
           path: tfplan
+        
 
       # Apply only on main branch
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
+        working-directory: envs/${{ env.ENV }}
