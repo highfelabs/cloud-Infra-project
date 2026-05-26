@@ -57,7 +57,7 @@ jobs:
       # Generate execution plan
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-        working-directory: envs/${{ env.ENV }}
+        working-directory: environments/${{ env.ENV }}
 
       # Upload plan artifact
       - name: Upload Terraform Plan
@@ -71,4 +71,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
-        working-directory: envs/${{ env.ENV }}
+        working-directory: environments/${{ env.ENV }}
