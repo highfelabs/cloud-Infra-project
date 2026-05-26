@@ -49,7 +49,7 @@ jobs:
             -backend-config="bucket=my-tf-state" \
             -backend-config="key=${{ env.ENV }}/terraform.tfstate" \
             -backend-config="region=us-east-1"
-        working-directory: envs/${{ env.ENV }}
+        working-directory: environments/${{ env.ENV }}
 
       # Check formatting
       - name: Terraform Format Check
