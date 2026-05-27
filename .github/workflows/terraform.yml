@@ -54,7 +54,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="bucket=my-tf-state" \
+            -backend-config="bucket=saas-infra-tfstate-704225640883" \
             -backend-config="key=${{ env.ENV }}/terraform.tfstate" \
             -backend-config="region=us-east-1"
         working-directory: environments/${{ env.ENV }}
