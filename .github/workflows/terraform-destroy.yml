@@ -1,0 +1,24 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        default: dev
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform init -reconfigure
+        working-directory: environments/${{ github.event.inputs.environment }}
+
+      - run: terraform destroy -auto-approve
+        working-directory: environments/${{ github.event.inputs.environment }}
