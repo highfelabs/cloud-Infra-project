@@ -13,12 +13,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Checkout repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+       
+      # configure aws credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: hashicorp/setup-terraform@v3
+      # Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
 
-      - run: terraform init -reconfigure
+      - name: Set environment (PR = dev default)
+        run: echo "ENV=dev" >> $GITHUB_ENV
+
+      # Initialize Terraform
+      - name: Terraform Init
         working-directory: environments/${{ github.event.inputs.environment }}
+        run: terraform init -reconfigure
 
-      - run: terraform destroy -auto-approve
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
         working-directory: environments/${{ github.event.inputs.environment }}
